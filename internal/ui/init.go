@@ -136,7 +136,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.syncDelegates()
 			}
 			return m, nil
+		case "K":
+			cursor := m.columns[m.focusedCol].Cursor()
+			if cursor == 0 {
+				return m, nil
+			}
+			toMove := m.columns[m.focusedCol].SelectedItem()
+			m.columns[m.focusedCol].RemoveItem(m.columns[m.focusedCol].Cursor())
+			m.columns[m.focusedCol].InsertItem(cursor-1, toMove)
+			m.columns[m.focusedCol].Select(cursor - 1)
+			return m, nil
+		case "J":
+			cursor := m.columns[m.focusedCol].Cursor()
+			if cursor == len(m.columns[m.focusedCol].Items())-1 {
+				return m, nil
+			}
+			toMove := m.columns[m.focusedCol].SelectedItem()
+			m.columns[m.focusedCol].RemoveItem(m.columns[m.focusedCol].Cursor())
+			m.columns[m.focusedCol].InsertItem(cursor+1, toMove)
+			m.columns[m.focusedCol].Select(cursor + 1)
+			return m, nil
 		}
+
 	}
 
 	var cmd tea.Cmd
