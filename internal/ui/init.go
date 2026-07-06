@@ -100,6 +100,41 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focusedCol++
 				m.syncDelegates()
 			}
+		case "L":
+			if m.focusedCol < len(m.columns)-1 {
+				cursor := m.columns[m.focusedCol].Cursor()
+				toMove := m.columns[m.focusedCol].SelectedItem()
+				m.columns[m.focusedCol].RemoveItem(cursor)
+
+				// clamp in case last item was removed
+				if n := len(m.columns[m.focusedCol].Items()); n > 0 {
+					m.columns[m.focusedCol].Select(min(cursor, n-1))
+				}
+
+				dest := m.columns[m.focusedCol+1].Cursor()
+				m.columns[m.focusedCol+1].InsertItem(dest, toMove)
+				m.focusedCol++
+				m.columns[m.focusedCol].Select(dest)
+				m.syncDelegates()
+			}
+			return m, nil
+		case "H":
+			if m.focusedCol > 0 {
+				cursor := m.columns[m.focusedCol].Cursor()
+				toMove := m.columns[m.focusedCol].SelectedItem()
+				m.columns[m.focusedCol].RemoveItem(cursor)
+
+				// clamp in case last item was removed
+				if n := len(m.columns[m.focusedCol].Items()); n > 0 {
+					m.columns[m.focusedCol].Select(min(cursor, n-1))
+				}
+
+				dest := m.columns[m.focusedCol-1].Cursor()
+				m.columns[m.focusedCol-1].InsertItem(dest, toMove)
+				m.focusedCol--
+				m.columns[m.focusedCol].Select(dest)
+				m.syncDelegates()
+			}
 			return m, nil
 		}
 	}
